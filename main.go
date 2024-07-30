@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -25,6 +26,7 @@ func (qc *QuizConfig) init() {
 	flag.Parse()
 }
 
+// open file and load csv file content
 func (qc *QuizConfig) readFile() ([][]string, error) {
 	// open file
 	f, err := os.Open(qc.file)
@@ -49,10 +51,15 @@ Issue: The original code used append to add elements to the problems slice, whic
 Solution: Use make with a length of 0 and a capacity of len(lines), or directly initialize the slice with the appropriate length to avoid unnecessary allocation.
 */
 
+// parse csv lines into problems
 func parseLines(lines [][]string) []Problem {
 	problems := make([]Problem, 0, len(lines))
 
 	for _, line := range lines {
+		if len(line) < 2 {
+			continue // skip malformed lines
+		}
+
 		problem := Problem{
 			question: line[0],
 			answer:   line[1],
@@ -62,23 +69,24 @@ func parseLines(lines [][]string) []Problem {
 	return problems
 }
 
+// ask questions and calculate score
 func askQuestion(pb []Problem) (int, error) {
-	var result int
-	var input string
+	var score int
+	scanner := bufio.NewScanner(os.Stdin)
 
 	for _, p := range pb {
 		fmt.Printf("Q: %s\nA: ", p.question)
-		_, err := fmt.Scan(&input)
-		if err != nil {
-			return 0, fmt.Errorf("failed to read input: %w", err)
+		if !scanner.Scan() {
+			return 0, fmt.Errorf("failed to read input: %w", scanner.Err())
 		}
+		input := scanner.Text()
 
 		if p.answer == input {
-			result++
+			score++
 		}
 	}
 
-	return result, nil
+	return score, nil
 }
 
 func main() {
@@ -91,10 +99,10 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	result, err := askQuestion(problems)
+	score, err := askQuestion(problems)
 	if err != nil {
 		log.Fatalf("error running quiz: %v", err)
 	}
 
-	fmt.Printf("Result: %d/%d\n", result, len(lines))
+	log.Printf("Result: %d/%d\n", score, len(problems))
 }
