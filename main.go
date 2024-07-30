@@ -13,12 +13,7 @@ type QuizConfig struct {
 
 // initialize quiz config
 func (qc *QuizConfig) init() {
-	flag.StringVar(
-		&qc.file,
-		"file",
-		default_file,
-		"path to file",
-	)
+	flag.StringVar(&qc.file, "file", default_file, "path to file")
 
 	flag.Parse()
 }
