@@ -23,6 +23,7 @@ type Problem struct {
 // initialize quiz config
 func (qc *QuizConfig) init() {
 	flag.StringVar(&qc.file, "file", defaultFile, "path to file")
+	flag.StringVar(&qc.file, "f", defaultFile, "path to file (shorthand)")
 	flag.Parse()
 }
 
