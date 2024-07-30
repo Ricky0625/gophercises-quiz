@@ -81,7 +81,7 @@ func askQuestion(pb []Problem) (int, error) {
 		if !scanner.Scan() {
 			return 0, fmt.Errorf("failed to read input: %w", scanner.Err())
 		}
-		input := scanner.Text()
+		input := strings.TrimSpace(scanner.Text())
 
 		if p.answer == input {
 			score++
@@ -106,5 +106,5 @@ func main() {
 		log.Fatalf("error running quiz: %v", err)
 	}
 
-	log.Printf("Result: %d/%d\n", score, len(problems))
+	log.Printf("Score: %d/%d\n", score, len(problems))
 }
