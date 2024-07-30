@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 const defaultFile = "problems.csv"
@@ -63,7 +64,7 @@ func parseLines(lines [][]string) []Problem {
 
 		problem := Problem{
 			question: line[0],
-			answer:   line[1],
+			answer:   strings.TrimSpace(line[1]),
 		}
 		problems = append(problems, problem)
 	}
