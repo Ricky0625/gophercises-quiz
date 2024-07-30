@@ -8,19 +8,22 @@ import (
 	"os"
 )
 
-const default_file = "problems.csv"
+const defaultFile = "problems.csv"
 
-type QuizConfig struct {
+type quizConfig struct {
 	file string
 }
 
+type problem struct {
+}
+
 // initialize quiz config
-func (qc *QuizConfig) init() {
-	flag.StringVar(&qc.file, "file", default_file, "path to file")
+func (qc *quizConfig) init() {
+	flag.StringVar(&qc.file, "file", defaultFile, "path to file")
 	flag.Parse()
 }
 
-func (qc *QuizConfig) readFile() ([][]string, error) {
+func (qc *quizConfig) readFile() ([][]string, error) {
 	// open file
 	f, err := os.Open(qc.file)
 	if err != nil {
@@ -39,7 +42,7 @@ func (qc *QuizConfig) readFile() ([][]string, error) {
 }
 
 func main() {
-	var config QuizConfig
+	var config quizConfig
 
 	config.init()
 	lines, err := config.readFile()
