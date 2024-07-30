@@ -44,7 +44,7 @@ func (qc *QuizConfig) readFile() ([][]string, error) {
 }
 
 /*
-Do not use make([]problem, 0, len(lines))
+Do not use make([]problem, len(lines))
 Issue: The original code used append to add elements to the problems slice, which caused a slice with twice the length of lines, leading to inefficient memory usage.
 Solution: Use make with a length of 0 and a capacity of len(lines), or directly initialize the slice with the appropriate length to avoid unnecessary allocation.
 */
@@ -62,6 +62,25 @@ func parseLines(lines [][]string) []Problem {
 	return problems
 }
 
+func askQuestion(pb []Problem) (int, error) {
+	var result int
+	var input string
+
+	for _, p := range pb {
+		fmt.Printf("Q: %s\nA: ", p.question)
+		_, err := fmt.Scan(&input)
+		if err != nil {
+			return 0, fmt.Errorf("failed to read input: %w", err)
+		}
+
+		if p.answer == input {
+			result++
+		}
+	}
+
+	return result, nil
+}
+
 func main() {
 	var config QuizConfig
 
@@ -72,7 +91,10 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	for _, problem := range problems {
-		fmt.Printf("q: %s, a: %s\n", problem.question, problem.answer)
+	result, err := askQuestion(problems)
+	if err != nil {
+		log.Fatalf("error running quiz: %v", err)
 	}
+
+	fmt.Printf("Result: %d/%d\n", result, len(lines))
 }
