@@ -47,3 +47,4 @@ Permitted boolean flags value:
 1, 0, t, f, T, F, true, false, TRUE, FALSE, True, False
 ```
 
+TODO: notes of `encoding/csv`
