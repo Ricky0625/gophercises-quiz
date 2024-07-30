@@ -106,5 +106,5 @@ func main() {
 		log.Fatalf("error running quiz: %v", err)
 	}
 
-	log.Printf("Score: %d/%d\n", score, len(problems))
+	fmt.Printf("Score: %d/%d\n", score, len(problems))
 }
