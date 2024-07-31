@@ -8,15 +8,18 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
 	defaultFile      = "problems.csv"
+	isTimerEnable    = false
 	defaultTimeLimit = 30
 )
 
 type QuizConfig struct {
-	file string
+	file      string
+	timeLimit int
 }
 
 type Problem struct {
@@ -28,6 +31,8 @@ type Problem struct {
 func (qc *QuizConfig) init() {
 	flag.StringVar(&qc.file, "file", defaultFile, "path to file")
 	flag.StringVar(&qc.file, "f", defaultFile, "path to file (shorthand)")
+	flag.IntVar(&qc.timeLimit, "limit", defaultTimeLimit, "time limit for quiz")
+	flag.IntVar(&qc.timeLimit, "l", defaultTimeLimit, "time limit for quiz (shorthand)")
 	flag.Parse()
 }
 
@@ -82,18 +87,24 @@ func readInput(ansCh chan<- string) {
 }
 
 // ask questions and calculate score
-func askQuestions(pb []Problem) (int, error) {
+func askQuestions(pb []Problem, timeLimit int) (int, error) {
 	var score int
 	ansCh := make(chan string)
+	countdown := time.NewTimer(time.Duration(timeLimit) * time.Second)
 
 	go readInput(ansCh)
 
 	for _, p := range pb {
 		fmt.Printf("Q: %s\nA: ", p.question)
 
-		answer := <-ansCh
-		if p.answer == answer {
-			score++
+		select {
+		case <-countdown.C:
+			fmt.Printf("\nTime's up!\n")
+			return score, nil
+		case answer := <-ansCh:
+			if p.answer == answer {
+				score++
+			}
 		}
 	}
 
@@ -110,7 +121,7 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	score, err := askQuestions(problems)
+	score, err := askQuestions(problems, config.timeLimit)
 	if err != nil {
 		log.Fatalf("error running quiz: %v", err)
 	}
