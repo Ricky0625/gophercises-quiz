@@ -1,36 +1,37 @@
 # Gophercises - Quiz
 
-The writeup of the exercise details: https://github.com/gophercises/quiz
+The writeup of the exercise details: [Gophercises Quiz](https://github.com/gophercises/quiz)
 
-## Packages in this exercise
+## Packages in this Exercise
 
 ### `flag`
 
-RTFM: https://pkg.go.dev/flag
+RTFM: [flag package documentation](https://pkg.go.dev/flag)
 
 This package provides basic command-line flag parsing.
 
 ```go
-// this declares an integer flag, -n with default value of 8080, stored in the pointer port, with type *int
+// This declares an integer flag, -n, with a default value of 8080,
+// stored in the pointer 'port' of type *int.
 var port = flag.Int("n", 8080, "port number") // returns a pointer
 
-// don't prefer working with pointer?
+// Prefer not to work with pointers?
 var age int
-flag.IntVar(&age, "age", 99, "your age") // returns dereferenced pointer
+flag.IntVar(&age, "age", 99, "your age") // uses a dereferenced pointer
 
-// parses the command line flags from os.Args[1:]
-// must be called after all flags are defined and before acessed by the program
+// Parses the command line flags from os.Args[1:].
+// Must be called after all flags are defined and before they are accessed by the program.
 flag.Parse()
 
 fmt.Println(*port) // need to dereference it
 fmt.Println(age)   // no dereference needed
 ```
 
-1. Define the flags needed for your program
-2. Parse flag using `flag.Parse()`
-3. Use the flags to do whatever you want
+1. Define the flags needed for your program.
+2. Parse the flags using `flag.Parse()`.
+3. Use the flags to perform the required actions.
 
-> Has builtin -h flag which shows all the flag you defined in your program.
+> The `flag` package includes a built-in `-h` flag that shows all the flags you defined in your program.
 
 Permitted flag syntax:
 
@@ -41,10 +42,10 @@ Permitted flag syntax:
 -flag x // works on non-boolean flags only
 ```
 
-Permitted boolean flags value:
+Permitted boolean flag values:
 
 ```text
 1, 0, t, f, T, F, true, false, TRUE, FALSE, True, False
 ```
 
-TODO: notes of `encoding/csv`
+TODO: Notes on `encoding/csv`.
