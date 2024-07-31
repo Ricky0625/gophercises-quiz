@@ -48,4 +48,35 @@ Permitted boolean flag values:
 1, 0, t, f, T, F, true, false, TRUE, FALSE, True, False
 ```
 
-TODO: Notes on `encoding/csv`.
+### `encoding/csv`
+
+RTFM: [`encoding/csv` docs](https://pkg.go.dev/encoding/csv)
+
+This package provides functions to read and write CSV files. This exercise mainly focus on how to read. It supports reading from and writing to CSV files with customizable delimeters, quote characters, and comment markers.
+
+```go
+// creates a new CSV reader
+csvReader = csv.NewReader(fileObj)
+
+// creates a new CSV writer
+csvWriter = csv.NewWriter(fileObj)
+
+// READ
+// reads one record, returns a slice representing the fields in the record
+csvReader.Read()
+// reads all records from CSV file, returns a slice of records, each record is a slice of strings
+csvReader.ReadAll()
+// reads the NEXT line from CSV file, returns a slice representing the fields in the record
+csvReader.ReadLine()
+
+// WRITE
+// write a single record to the CSV file, takes in a slice of fields
+csvWriter.Write()
+// write all, takes in a slice of records, each slice is a slice of strings
+csvWriter.WriteAll()
+
+// CONFIG
+csvReader.Comma = ';'
+csvReader.Comment = '#'
+```
+

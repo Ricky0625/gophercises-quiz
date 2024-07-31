@@ -73,6 +73,8 @@ func parseLines(lines [][]string) []Problem {
 	return problems
 }
 
+// read input using channel
+// takes in a write-only channel, scan for input, send data through channel
 func readInput(ansCh chan<- string) {
 	scanner := bufio.NewScanner(os.Stdin)
 
@@ -83,7 +85,7 @@ func readInput(ansCh chan<- string) {
 	if err := scanner.Err(); err != nil {
 		log.Printf("error reading input: %v", err)
 	}
-	close(ansCh)
+	close(ansCh) // close in case of error
 }
 
 // ask questions and calculate score
