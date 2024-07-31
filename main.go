@@ -117,6 +117,7 @@ func askQuestions(pb []Problem, timeLimit int) (int, error) {
 	return score, nil
 }
 
+// shuffle questions
 func shuffleQuestions(pb []Problem) {
 	rand.Shuffle(len(pb), func(i, j int) {
 		pb[i], pb[j] = pb[j], pb[i]
