@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
 	"time"
@@ -13,13 +14,14 @@ import (
 
 const (
 	defaultFile      = "problems.csv"
-	isTimerEnable    = false
 	defaultTimeLimit = 30
+	enableShuffle    = false
 )
 
 type QuizConfig struct {
 	file      string
 	timeLimit int
+	shuffle   bool
 }
 
 type Problem struct {
@@ -33,6 +35,8 @@ func (qc *QuizConfig) init() {
 	flag.StringVar(&qc.file, "f", defaultFile, "path to file (shorthand)")
 	flag.IntVar(&qc.timeLimit, "limit", defaultTimeLimit, "time limit for quiz")
 	flag.IntVar(&qc.timeLimit, "l", defaultTimeLimit, "time limit for quiz (shorthand)")
+	flag.BoolVar(&qc.shuffle, "shuffle", enableShuffle, "shuffle questions")
+	flag.BoolVar(&qc.shuffle, "s", enableShuffle, "shuffle questions (shorthand)")
 	flag.Parse()
 }
 
@@ -113,6 +117,12 @@ func askQuestions(pb []Problem, timeLimit int) (int, error) {
 	return score, nil
 }
 
+func shuffleQuestions(pb []Problem) {
+	rand.Shuffle(len(pb), func(i, j int) {
+		pb[i], pb[j] = pb[j], pb[i]
+	})
+}
+
 func main() {
 	var config QuizConfig
 
@@ -123,6 +133,11 @@ func main() {
 	}
 
 	problems := parseLines(lines)
+
+	if config.shuffle {
+		shuffleQuestions(problems)
+	}
+
 	score, err := askQuestions(problems, config.timeLimit)
 	if err != nil {
 		log.Fatalf("error running quiz: %v", err)
