@@ -10,7 +10,10 @@ import (
 	"strings"
 )
 
-const defaultFile = "problems.csv"
+const (
+	defaultFile      = "problems.csv"
+	defaultTimeLimit = 30
+)
 
 type QuizConfig struct {
 	file string
@@ -47,12 +50,6 @@ func (qc *QuizConfig) readFile() ([][]string, error) {
 	return lines, nil
 }
 
-/*
-Do not use make([]problem, len(lines))
-Issue: The original code used append to add elements to the problems slice, which caused a slice with twice the length of lines, leading to inefficient memory usage.
-Solution: Use make with a length of 0 and a capacity of len(lines), or directly initialize the slice with the appropriate length to avoid unnecessary allocation.
-*/
-
 // parse csv lines into problems
 func parseLines(lines [][]string) []Problem {
 	problems := make([]Problem, 0, len(lines))
@@ -71,19 +68,31 @@ func parseLines(lines [][]string) []Problem {
 	return problems
 }
 
-// ask questions and calculate score
-func askQuestion(pb []Problem) (int, error) {
-	var score int
+func readInput(ansCh chan<- string) {
 	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		ansCh <- strings.TrimSpace(scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Printf("error reading input: %v", err)
+	}
+	close(ansCh)
+}
+
+// ask questions and calculate score
+func askQuestions(pb []Problem) (int, error) {
+	var score int
+	ansCh := make(chan string)
+
+	go readInput(ansCh)
 
 	for _, p := range pb {
 		fmt.Printf("Q: %s\nA: ", p.question)
-		if !scanner.Scan() {
-			return 0, fmt.Errorf("failed to read input: %w", scanner.Err())
-		}
-		input := strings.TrimSpace(scanner.Text())
 
-		if p.answer == input {
+		answer := <-ansCh
+		if p.answer == answer {
 			score++
 		}
 	}
@@ -101,7 +110,7 @@ func main() {
 	}
 
 	problems := parseLines(lines)
-	score, err := askQuestion(problems)
+	score, err := askQuestions(problems)
 	if err != nil {
 		log.Fatalf("error running quiz: %v", err)
 	}
